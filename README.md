@@ -81,14 +81,20 @@ src/
 
 ## Integration readiness
 
-Nothing below is connected yet. These are the planned integration points.
+### Supabase (connected: application client only)
 
-### Supabase (database and auth)
+The app connects to Supabase with `@supabase/supabase-js` and `@supabase/ssr`, using only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (provided by the Vercel Supabase integration). No tables, auth screens or business logic exist yet.
 
-1. Install `@supabase/supabase-js` and `@supabase/ssr`.
-2. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (see `.env.example`). Only the publishable key may be public, and it is only safe when Row Level Security is enabled.
-3. Add the clients under `src/server/supabase/` (server client) and `src/lib/supabase/` (browser client), plus a `proxy.ts` for session refresh.
-4. Manage schema changes as versioned SQL migrations (for example in `supabase/migrations/`). Enable RLS on every table.
+| File | Purpose |
+| --- | --- |
+| `src/lib/supabase/env.ts` | Reads and validates the public config; throws `SupabaseConfigError` naming any missing variable. |
+| `src/lib/supabase/client.ts` | Browser client (singleton) for Client Components. |
+| `src/lib/supabase/server.ts` | Per-request server client (`server-only`) for Server Components, Server Actions and Route Handlers. |
+| `src/lib/supabase/proxy.ts` | `updateSession()`: refreshes auth cookies; skips with a warning if config is missing. |
+| `src/proxy.ts` | Next.js 16 proxy that runs `updateSession()` on page requests. No redirects. |
+| `src/types/database.ts` | Placeholder `Database` type; replace with generated types once a schema exists. |
+
+The publishable key is only safe with Row Level Security enabled on every table. Never use the service-role or secret key in these clients. Manage future schema changes as versioned SQL migrations.
 
 ### OpenAI (server-side only)
 
@@ -98,7 +104,8 @@ Nothing below is connected yet. These are the planned integration points.
 
 ## Outstanding setup requirements
 
-- [ ] Choose and connect a Supabase project; define the initial schema and RLS policies.
+- [x] Connect the Supabase project and add application clients.
+- [ ] Define the initial schema and RLS policies; generate `src/types/database.ts`.
 - [ ] Implement authentication (Supabase Auth) and protect routes.
 - [ ] Provision `OPENAI_API_KEY` in Vercel project environments.
 - [ ] Add input validation (Zod) and rate limiting to `/api/ai` before enabling it.
