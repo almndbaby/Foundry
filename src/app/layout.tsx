@@ -11,5 +11,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#171b23", colorScheme: "light" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body><WorkspaceShell>{children}</WorkspaceShell></body></html>;
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        <WorkspaceShell>{children}</WorkspaceShell>
+      </body>
+    </html>
+  );
 }
