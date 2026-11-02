@@ -231,6 +231,9 @@ create table public.discovery_answers (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
 
+  constraint discovery_answers_id_user_unique
+    unique (id, user_id),
+  
   constraint discovery_answers_session_owner_fk
     foreign key (session_id, user_id)
     references public.discovery_sessions(id, user_id)
