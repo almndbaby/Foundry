@@ -119,7 +119,6 @@ grant select on public.ai_runs
 to authenticated;
 
 -- AI runs are created and updated by trusted server operations.
--- Authenticated browser clients cannot create or modify run records.
 
 -- ---------------------------------------------------------
 -- 3. CONVERSATIONS
@@ -196,18 +195,26 @@ to authenticated
 using ((select auth.uid()) = user_id)
 with check ((select auth.uid()) = user_id);
 
-create policy "Users can delete their own conversations"
-on public.conversations
-for delete
-to authenticated
-using ((select auth.uid()) = user_id);
-
 revoke all on public.conversations
 from anon, authenticated;
 
-grant select, insert, update, delete
+grant select, insert
 on public.conversations
 to authenticated;
+
+grant update (
+  title,
+  archived_at,
+  deleted_at
+)
+on public.conversations
+to authenticated;
+
+-- Users can create conversations and manage their own
+-- titles, archive status and soft-delete status.
+-- Context, ownership and discovery-session links cannot
+-- be changed by authenticated browser clients.
+-- Hard deletion is not permitted to authenticated users.
 
 -- ---------------------------------------------------------
 -- 4. MESSAGES
@@ -287,9 +294,9 @@ grant insert (
 on public.messages
 to authenticated;
 
--- Assistant, system and tool messages are written by the
--- trusted server-side AI service, not browser clients.
--- Messages are append-only for authenticated users.
+-- Assistant, system and tool messages are written by
+-- trusted server-side AI operations.
+-- Authenticated users cannot edit or delete messages.
 
 -- ---------------------------------------------------------
 -- 5. STRUCTURED AI OUTPUTS
