@@ -106,6 +106,8 @@ create table public.opportunities (
   discovery_profile_id uuid,
 
   created_at timestamptz not null default now(),
+  constraint assessment_dimensions_id_user_unique
+    unique (id, user_id),
   updated_at timestamptz not null default now(),
 
   constraint opportunities_id_user_unique
