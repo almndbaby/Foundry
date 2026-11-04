@@ -109,12 +109,12 @@ create table public.research_reports (
   constraint research_reports_version_positive
     check (version > 0),
 
-  constraint research_reports_completion_check
+    constraint research_reports_completion_check
     check (
       (status = 'completed' and completed_at is not null)
       or
       (status <> 'completed' and completed_at is null)
-    ),
+    )
 );
 
 create unique index research_reports_one_current_idx
