@@ -115,12 +115,6 @@ create table public.research_reports (
       or
       (status <> 'completed' and completed_at is null)
     ),
-
-  constraint research_reports_time_check
-    check (
-      started_at is null
-      or started_at <= coalesce(completed_at, now())
-    )
 );
 
 create unique index research_reports_one_current_idx
