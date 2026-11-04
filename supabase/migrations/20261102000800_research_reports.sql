@@ -122,7 +122,7 @@ on public.research_reports (opportunity_id)
 where is_current = true;
 
 create unique index research_reports_version_idx
-on public.research_reports (opportunity_id, version);
+on public.research_reports (opportunity_id, user_id, version);
 
 create index research_reports_user_opportunity_idx
 on public.research_reports (user_id, opportunity_id);
